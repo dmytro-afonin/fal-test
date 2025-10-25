@@ -1,8 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { generateImageAction } from "./actions";
+import { generateImageAction } from "./api/fal/actions";
 import { Skeleton } from "../components/LoadingSkeleton";
+import { fal } from "@fal-ai/client";
+import { handleFalError } from "./api/fal/helpers";
+
+fal.config({
+  proxyUrl: "/api/fal/proxy",
+});
 
 export default function Home() {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -11,6 +17,41 @@ export default function Home() {
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const uploadImageAction = async (imageDataUrl: string, fileName?: string) => {
+    try {
+      // Convert data URL to File object
+      const response = await fetch(imageDataUrl);
+      const blob = await response.blob();
+      
+      // Extract file name and type from the original file or use defaults
+      const name = fileName || `image_${Date.now()}.jpg`;
+      const type = blob.type || "image/jpeg";
+      
+      // If we have a fileName, preserve its extension
+      let finalName = name;
+      if (fileName && fileName.includes('.')) {
+        const extension = fileName.split('.').pop();
+        finalName = `image_${Date.now()}.${extension}`;
+      }
+      
+      const file = new File([blob], finalName, { type });
+      
+      // Upload to fal.ai storage
+      const url = await fal.storage.upload(file);
+      console.log({url});
+      
+      return {
+        success: true,
+        imageUrl: url,
+      };
+    } catch (error) {
+      console.error("Upload error:", error);
+      return {
+        success: false,
+        error: handleFalError(error),
+      };
+    }
+  }
   const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -38,17 +79,39 @@ export default function Home() {
       // Convert file to base64 data URL
       const reader = new FileReader();
       reader.onload = async (e) => {
-        const imageDataUrl = e.target?.result as string;
-        
-        const result = await generateImageAction(imageDataUrl);
+        try {
+          const imageDataUrl = e.target?.result as string;
+          
+          // Step 1: Upload image to storage
+          const uploadResult = await uploadImageAction(imageDataUrl, selectedImage.name);
+          console.log({uploadResult});
+          
+          if (!uploadResult.success) {
+            setError(uploadResult.error || "Failed to upload image");
+            setIsGenerating(false);
+            return;
+          }
 
-        if (result.success) {
-          setGeneratedImage(result.imageUrl ?? null);
-        } else {
-          setError(result.error || "Failed to generate image");
+          // Step 2: Generate image using uploaded URL
+          const generateResult = await generateImageAction(uploadResult.imageUrl!);
+
+          if (generateResult.success) {
+            setGeneratedImage(generateResult.imageUrl ?? null);
+          } else {
+            setError(generateResult.error || "Failed to generate image");
+          }
+        } catch (actionError) {
+          console.error("Error in generation process:", actionError);
+          setError("Server error during generation. Please try again.");
         }
         setIsGenerating(false);
       };
+      
+      reader.onerror = () => {
+        setError("Failed to read the image file. Please try a different image.");
+        setIsGenerating(false);
+      };
+      
       reader.readAsDataURL(selectedImage);
     } catch (err) {
       console.error("Error generating image:", err);
