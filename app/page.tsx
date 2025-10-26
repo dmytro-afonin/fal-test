@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { generateImageAction } from "./api/fal/actions";
-import { Skeleton } from "../components/LoadingSkeleton";
 import { fal } from "@fal-ai/client";
 import { handleFalError } from "./api/fal/helpers";
+import { Skeleton } from "@/components/ui/skeleton";
 
 fal.config({
   proxyUrl: "/api/fal/proxy",
@@ -66,6 +66,7 @@ export default function Home() {
     }
   };
 
+
   const generateImage = async () => {
     if (!selectedImage) {
       setError("Please select an image first");
@@ -121,13 +122,13 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen py-8">
       <div className="max-w-4xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-center mb-8 text-gray-800">
-          AI Image Editor
+          Deegva | AI
         </h1>
         
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+        <div className="rounded-lg shadow-lg p-6 mb-6">
           <h2 className="text-xl font-semibold mb-4">Upload Image</h2>
           <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
             <input
@@ -162,7 +163,7 @@ export default function Home() {
         </div>
 
         {selectedImage && (
-          <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+          <div className="rounded-lg shadow-lg p-6 mb-6">
             <h2 className="text-xl font-semibold mb-4">Generate Realistic Photo</h2>
             <p className="text-gray-600 mb-4">
               Click the button below to transform your image into a realistic photo.
@@ -188,17 +189,15 @@ export default function Home() {
         )}
 
         {isGenerating && (
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <h2 className="text-xl font-semibold mb-4">Generated Result</h2>
+          <div className="rounded-lg shadow-lg p-6">
             <div className="space-y-2">
-              <Skeleton className="h-6 w-40" />
               <Skeleton className="h-72 w-full" />
             </div>
           </div>
         )}
 
         {generatedImage && !isGenerating && (
-          <div className="bg-white rounded-lg shadow-lg p-6">
+          <div className="rounded-lg shadow-lg p-6">
             <h2 className="text-xl font-semibold mb-4">Generated Result</h2>
             <div className="text-center">
               <img
