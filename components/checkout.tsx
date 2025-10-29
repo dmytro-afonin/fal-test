@@ -8,7 +8,15 @@ import { startCheckoutSession } from "@/app/actions/stripe"
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
 
 export default function Checkout({ packageId }: { packageId: string }) {
-  const startCheckoutSessionForPackage = useCallback(() => startCheckoutSession(packageId), [packageId])
+  const startCheckoutSessionForPackage = useCallback(async () => {
+    const clientSecret = await startCheckoutSession(packageId)
+    
+    if (!clientSecret) {
+      throw new Error("Failed to get Stripe client secret")
+    }
+
+    return clientSecret
+  }, [packageId])
 
   return (
     <div id="checkout">
