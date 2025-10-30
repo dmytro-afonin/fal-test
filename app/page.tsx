@@ -1,5 +1,3 @@
-import { ThemeSwitcher } from "@/components/theme-switcher";
-import { AuthButton } from "@/components/auth-button";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
@@ -14,18 +12,8 @@ export default async function Home() {
     .order("created_at", { ascending: false });
 
   return (
-    <div className="min-h-screen py-8">
+    <div className="min-h-screen">
       <div className="max-w-4xl mx-auto px-4">
-        <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
-          <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
-            <div className="flex gap-5 items-center font-semibold">
-              <Link href={"/"}>Deegva | AI</Link>
-            </div>
-            <ThemeSwitcher/>
-            <AuthButton />
-          </div>
-        </nav>
-
         <main className="container mx-auto px-4 py-12">
         {!pipelines || pipelines.length === 0 ? (
           <div className="text-center py-20">

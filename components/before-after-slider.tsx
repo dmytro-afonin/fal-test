@@ -15,11 +15,6 @@ export function BeforeAfterSlider({ beforeImage, afterImage, alt, className }: B
   const [isDragging, setIsDragging] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
-    console.log("[v0] BeforeAfterSlider - Before image:", beforeImage)
-    console.log("[v0] BeforeAfterSlider - After image:", afterImage)
-  }, [beforeImage, afterImage])
-
   const handleMove = (clientX: number) => {
     if (!containerRef.current) return
 

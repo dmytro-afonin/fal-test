@@ -7,8 +7,9 @@ import type Stripe from "stripe"
 const supabaseAdmin = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
 
 export async function POST(request: Request) {
-  const body = await request.text()
-  const signature = request.headers.get("stripe-signature")
+  const body = await request.text();
+
+  const signature = request.headers.get("stripe-signature");
 
   if (!signature) {
     return NextResponse.json({ error: "No signature" }, { status: 400 })
@@ -20,24 +21,23 @@ export async function POST(request: Request) {
     // Verify webhook signature
     event = stripe.webhooks.constructEvent(body, signature, process.env.STRIPE_WEBHOOK_SECRET!)
   } catch (error) {
-    console.error("[v0] Webhook signature verification failed:", error)
-    return NextResponse.json({ error: "Invalid signature" }, { status: 400 })
+    console.error("Webhook signature verification failed:", error);
+    return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
   // Handle the event
   if (event.type === "checkout.session.completed") {
-    const session = event.data.object as Stripe.Checkout.Session
-
-    const userId = session.metadata?.userId
-    const credits = Number.parseInt(session.metadata?.credits || "0")
-    const packageId = session.metadata?.packageId
+    const session = event.data.object as Stripe.Checkout.Session;
+    const userId = session.metadata?.userId;
+    const credits = Number.parseInt(session.metadata?.credits || "0");
+    const packageId = session.metadata?.packageId;
 
     if (!userId || !credits) {
-      console.error("[v0] Missing metadata in checkout session:", session.id)
+      console.error("Missing metadata in checkout session:", session.id)
       return NextResponse.json({ error: "Missing metadata" }, { status: 400 })
     }
 
-    console.log("[v0] Processing payment for user:", userId, "credits:", credits)
+    console.log("Processing payment for user:", userId, "credits:", credits)
 
     // Add credits to user account
     const { data: profile, error: fetchError } = await supabaseAdmin
@@ -47,7 +47,7 @@ export async function POST(request: Request) {
       .single()
 
     if (fetchError) {
-      console.error("[v0] Error fetching user profile:", fetchError)
+      console.error("Error fetching user profile:", fetchError)
       return NextResponse.json({ error: "Failed to fetch profile" }, { status: 500 })
     }
 
@@ -59,7 +59,7 @@ export async function POST(request: Request) {
       .eq("id", userId)
 
     if (updateError) {
-      console.error("[v0] Error updating credits:", updateError)
+      console.error("Error updating credits:", updateError)
       return NextResponse.json({ error: "Failed to update credits" }, { status: 500 })
     }
 
@@ -76,7 +76,7 @@ export async function POST(request: Request) {
       },
     })
 
-    console.log("[v0] Successfully added", credits, "credits to user", userId, "New balance:", newCredits)
+    console.log("Successfully added", credits, "credits to user", userId, "New balance:", newCredits)
   }
 
   return NextResponse.json({ received: true })

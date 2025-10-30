@@ -28,8 +28,8 @@ export default async function CreditsPage() {
   const credits = profile?.credits || 0
 
   return (
-    <div className="container mx-auto py-8 px-4">
-      <div className="max-w-4xl mx-auto">
+    <div>
+      <div className="container mx-auto mt-5">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">Credits</h1>
           <p className="text-muted-foreground">Manage your credits and purchase more to generate images</p>

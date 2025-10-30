@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="Deegva AI logo - flat">
+  <defs>
+    <style>
+      .color { fill: #D5B88A; }
+    </style>
+  </defs>
+
+  <!-- Transparent background (none) -->
+  <!-- Centered easel + canvas + eye icon -->
+
+  <!-- Canvas -->
+  <rect x="128" y="104" width="256" height="176" rx="16" ry="16" class="color" />
+
+  <!-- Inner canvas cutout (to make the frame appear) -->
+  <rect x="152" y="128" width="208" height="128" rx="4" ry="4" fill="rgba(0,0,0,0)" />
+
+  <!-- Eye (drawn as geometric shapes) -->
+  <g transform="translate(256,196)">
+    <!-- outer eye (ellipse shape) -->
+    <path d="M -120 0 C -80 -60, 80 -60, 120 0 C 80 60, -80 60, -120 0 Z" fill="#0E2130" />
+    <!-- iris circle -->
+    <circle cx="0" cy="0" r="36" class="color" />
+    <!-- pupil -->
+    <circle cx="0" cy="0" r="14" fill="#0E2130" />
+  </g>
+
+  <!-- Easel legs and support (simple geometric) -->
+  <rect x="184" y="296" width="144" height="24" rx="6" ry="6" class="color" />
+  <rect x="198" y="320" width="28" height="88" rx="6" ry="6" transform="rotate(-14 212 364)" class="color" />
+  <rect x="286" y="320" width="28" height="88" rx="6" ry="6" transform="rotate(14 300 364)" class="color" />
+
+  <!-- Top peg -->
+  <rect x="244" y="72" width="24" height="24" rx="6" ry="6" class="color" />
+
+  <!-- Make sure everything visually centered by viewBox -->
+</svg>
