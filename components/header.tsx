@@ -3,22 +3,18 @@ import { ThemeSwitcher } from "./theme-switcher";
 import { AuthButton } from "./auth-button";
 import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, navigationMenuTriggerStyle } from "./ui/navigation-menu";
 import { createClient } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
 import { Button } from "./ui/button";
 
 export async function Header() {
 
   const supabase = await createClient()
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    redirect("/auth/login")
+  const {data: { user }} = await supabase.auth.getUser()
+  let profile;
+  if (user) {
+    const { data } = await supabase.from("user_profiles").select("credits").eq("id", user.id).single()
+    profile = data;
   }
-
-  const { data: profile } = await supabase.from("user_profiles").select("credits").eq("id", user.id).single()
 
   return (
     <header>
@@ -30,7 +26,8 @@ export async function Header() {
                 <span>Deegva | AI</span>
               </Link>
             </div>
-            <NavigationMenu>
+            {profile && (
+              <NavigationMenu>
               <NavigationMenuList>
                 <NavigationMenuItem>
                   <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
@@ -51,6 +48,8 @@ export async function Header() {
                 </NavigationMenuItem>
               </NavigationMenuList>
             </NavigationMenu>
+            )}
+
             <div className="flex items-center">
               <div className="mr-2">
                 <AuthButton />
