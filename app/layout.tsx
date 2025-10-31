@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
-import { Header } from "@/components/header";
+import Header from "@/components/header";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 
 const defaultUrl = process.env.VERCEL_URL
@@ -28,7 +28,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.className} antialiased`}>
+      <body className={`${geistSans.className} antialiased flex flex-col min-h-screen`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -36,8 +36,10 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <Header/>
+          <div className="flex-1">
           {children}
-          <footer className="w-full flex items-center justify-center border-t mx-auto text-center text-xs gap-8 py-16">
+          </div>
+          <footer className="w-full flex items-center justify-center border-t mx-auto text-center text-xs gap-8 py-3">
           <p>
             Powered by{" "}
             <a
