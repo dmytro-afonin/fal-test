@@ -1,7 +1,7 @@
-import { Button } from "@/components/ui/button"
-import Link from "next/link"
-import { ArrowLeft } from "lucide-react"
-import { CreatePipelineForm } from "@/components/create-pipeline-form"
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
+import { CreatePipelineForm } from "@/components/create-pipeline-form";
+import { Button } from "@/components/ui/button";
 
 export default function CreatePipelinePage() {
   return (
@@ -16,7 +16,9 @@ export default function CreatePipelinePage() {
             </Button>
           </Link>
           <h1 className="text-2xl font-bold">Create Pipeline</h1>
-          <p className="text-sm text-muted-foreground">Configure a new AI pipeline</p>
+          <p className="text-sm text-muted-foreground">
+            Configure a new AI pipeline
+          </p>
         </div>
       </header>
 
@@ -25,5 +27,5 @@ export default function CreatePipelinePage() {
         <CreatePipelineForm />
       </main>
     </div>
-  )
+  );
 }

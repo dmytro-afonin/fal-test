@@ -1,24 +1,24 @@
-"use server"
+"use server";
 
-import { stripe } from "@/lib/stripe"
-import { CREDIT_PACKAGES } from "@/lib/credit-packages"
-import { createClient } from "@/lib/supabase/server"
+import { CREDIT_PACKAGES } from "@/lib/credit-packages";
+import { stripe } from "@/lib/stripe";
+import { createClient } from "@/lib/supabase/server";
 
 export async function startCheckoutSession(packageId: string) {
-  const supabase = await createClient()
+  const supabase = await createClient();
 
   // Get current user
   const {
     data: { user },
-  } = await supabase.auth.getUser()
+  } = await supabase.auth.getUser();
 
   if (!user) {
-    throw new Error("Unauthorized")
+    throw new Error("Unauthorized");
   }
 
-  const creditPackage = CREDIT_PACKAGES.find((p) => p.id === packageId)
+  const creditPackage = CREDIT_PACKAGES.find((p) => p.id === packageId);
   if (!creditPackage) {
-    throw new Error(`Credit package with id "${packageId}" not found`)
+    throw new Error(`Credit package with id "${packageId}" not found`);
   }
 
   // Create Checkout Session
@@ -44,15 +44,15 @@ export async function startCheckoutSession(packageId: string) {
       credits: creditPackage.credits.toString(),
       packageId: creditPackage.id,
     },
-  })
+  });
 
-  return session.client_secret
+  return session.client_secret;
 }
 
 export async function getCheckoutSessionStatus(sessionId: string) {
-  const session = await stripe.checkout.sessions.retrieve(sessionId)
+  const session = await stripe.checkout.sessions.retrieve(sessionId);
   return {
     status: session.status,
     customerEmail: session.customer_details?.email,
-  }
+  };
 }

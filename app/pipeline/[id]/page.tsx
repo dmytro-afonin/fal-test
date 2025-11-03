@@ -1,24 +1,28 @@
-import { createClient } from "@/lib/supabase/server"
-import { notFound } from "next/navigation"
-import { PipelineExecutor } from "@/components/pipeline-executor"
-import { Button } from "@/components/ui/button"
-import Link from "next/link"
-import { ArrowLeft } from "lucide-react"
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { PipelineExecutor } from "@/components/pipeline-executor";
+import { Button } from "@/components/ui/button";
+import { createClient } from "@/lib/supabase/server";
 
 interface PipelinePageProps {
   params: Promise<{
-    id: string
-  }>
+    id: string;
+  }>;
 }
 
 export default async function PipelinePage({ params }: PipelinePageProps) {
-  const { id } = await params
-  const supabase = await createClient()
+  const { id } = await params;
+  const supabase = await createClient();
 
-  const { data: pipeline, error } = await supabase.from("pipelines").select("*").eq("id", id).single()
+  const { data: pipeline, error } = await supabase
+    .from("pipelines")
+    .select("*")
+    .eq("id", id)
+    .single();
 
   if (error || !pipeline) {
-    notFound()
+    notFound();
   }
 
   return (
@@ -32,7 +36,9 @@ export default async function PipelinePage({ params }: PipelinePageProps) {
             </Button>
           </Link>
           <h1 className="text-2xl font-bold">{pipeline.name}</h1>
-          <p className="text-sm text-muted-foreground">{pipeline.description}</p>
+          <p className="text-sm text-muted-foreground">
+            {pipeline.description}
+          </p>
         </div>
       </header>
 
@@ -41,5 +47,5 @@ export default async function PipelinePage({ params }: PipelinePageProps) {
         <PipelineExecutor pipeline={pipeline} />
       </main>
     </div>
-  )
+  );
 }

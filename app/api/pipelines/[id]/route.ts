@@ -1,11 +1,14 @@
-import { type NextRequest, NextResponse } from "next/server"
-import { createClient } from "@/lib/supabase/server"
+import { type NextRequest, NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
 
-export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
   try {
-    const { id } = await params
-    const supabase = await createClient()
-    const body = await request.json()
+    const { id } = await params;
+    const supabase = await createClient();
+    const body = await request.json();
 
     const { error } = await supabase
       .from("pipelines")
@@ -19,35 +22,50 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         after_image_url: body.after_image_url,
         updated_at: new Date().toISOString(),
       })
-      .eq("id", id)
+      .eq("id", id);
 
     if (error) {
-      console.error("[v0] Error updating pipeline:", error)
-      return NextResponse.json({ error: "Failed to update pipeline" }, { status: 500 })
+      console.error("[v0] Error updating pipeline:", error);
+      return NextResponse.json(
+        { error: "Failed to update pipeline" },
+        { status: 500 },
+      );
     }
 
-    return NextResponse.json({ success: true })
+    return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("[v0] Error updating pipeline:", error)
-    return NextResponse.json({ error: "Failed to update pipeline" }, { status: 500 })
+    console.error("[v0] Error updating pipeline:", error);
+    return NextResponse.json(
+      { error: "Failed to update pipeline" },
+      { status: 500 },
+    );
   }
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function DELETE(
+  _: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
   try {
-    const { id } = await params
-    const supabase = await createClient()
+    const { id } = await params;
+    const supabase = await createClient();
 
-    const { error } = await supabase.from("pipelines").delete().eq("id", id)
+    const { error } = await supabase.from("pipelines").delete().eq("id", id);
 
     if (error) {
-      console.error("[v0] Error deleting pipeline:", error)
-      return NextResponse.json({ error: "Failed to delete pipeline" }, { status: 500 })
+      console.error("[v0] Error deleting pipeline:", error);
+      return NextResponse.json(
+        { error: "Failed to delete pipeline" },
+        { status: 500 },
+      );
     }
 
-    return NextResponse.json({ success: true })
+    return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("[v0] Error deleting pipeline:", error)
-    return NextResponse.json({ error: "Failed to delete pipeline" }, { status: 500 })
+    console.error("[v0] Error deleting pipeline:", error);
+    return NextResponse.json(
+      { error: "Failed to delete pipeline" },
+      { status: 500 },
+    );
   }
 }

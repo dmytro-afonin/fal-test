@@ -1,19 +1,19 @@
-import { createClient } from "@/lib/supabase/server"
-import { Button } from "@/components/ui/button"
-import Link from "next/link"
-import { Plus, ArrowLeft } from "lucide-react"
-import { PipelineList } from "@/components/pipeline-list"
+import { ArrowLeft, Plus } from "lucide-react";
+import Link from "next/link";
+import { PipelineList } from "@/components/pipeline-list";
+import { Button } from "@/components/ui/button";
+import { createClient } from "@/lib/supabase/server";
 
 export default async function AdminPage() {
-  const supabase = await createClient()
+  const supabase = await createClient();
 
   const { data: pipelines, error } = await supabase
     .from("pipelines")
     .select("*")
-    .order("created_at", { ascending: false })
+    .order("created_at", { ascending: false });
 
   if (error) {
-    console.error("[v0] Error fetching pipelines:", error)
+    console.error("[v0] Error fetching pipelines:", error);
   }
 
   return (
@@ -30,7 +30,9 @@ export default async function AdminPage() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold">Admin Dashboard</h1>
-              <p className="text-sm text-muted-foreground">Manage AI pipelines</p>
+              <p className="text-sm text-muted-foreground">
+                Manage AI pipelines
+              </p>
             </div>
             <Link href="/admin/create">
               <Button>
@@ -47,5 +49,5 @@ export default async function AdminPage() {
         <PipelineList pipelines={pipelines || []} />
       </main>
     </div>
-  )
+  );
 }

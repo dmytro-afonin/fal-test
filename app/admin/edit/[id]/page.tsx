@@ -1,24 +1,30 @@
-import { createClient } from "@/lib/supabase/server"
-import { notFound } from "next/navigation"
-import { EditPipelineForm } from "@/components/edit-pipeline-form"
-import { Button } from "@/components/ui/button"
-import Link from "next/link"
-import { ArrowLeft } from "lucide-react"
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { EditPipelineForm } from "@/components/edit-pipeline-form";
+import { Button } from "@/components/ui/button";
+import { createClient } from "@/lib/supabase/server";
 
 interface EditPipelinePageProps {
   params: Promise<{
-    id: string
-  }>
+    id: string;
+  }>;
 }
 
-export default async function EditPipelinePage({ params }: EditPipelinePageProps) {
-  const { id } = await params
-  const supabase = await createClient()
+export default async function EditPipelinePage({
+  params,
+}: EditPipelinePageProps) {
+  const { id } = await params;
+  const supabase = await createClient();
 
-  const { data: pipeline, error } = await supabase.from("pipelines").select("*").eq("id", id).single()
+  const { data: pipeline, error } = await supabase
+    .from("pipelines")
+    .select("*")
+    .eq("id", id)
+    .single();
 
   if (error || !pipeline) {
-    notFound()
+    notFound();
   }
 
   return (
@@ -38,5 +44,5 @@ export default async function EditPipelinePage({ params }: EditPipelinePageProps
         <EditPipelineForm pipeline={pipeline} />
       </main>
     </div>
-  )
+  );
 }

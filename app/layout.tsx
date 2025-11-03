@@ -28,31 +28,33 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.className} antialiased flex flex-col min-h-screen`}>
+      <body
+        className={`${geistSans.className} antialiased flex flex-col min-h-screen`}
+      >
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
-          <Header/>
-          <div className="flex-1">
-          {children}
-          </div>
+          <header>
+            <Header />
+          </header>
+          <main className="flex-1">{children}</main>
           <footer className="w-full flex items-center justify-center border-t mx-auto text-center text-xs gap-8 py-3">
-          <p>
-            Powered by{" "}
-            <a
-              href="https://supabase.com/?utm_source=create-next-app&utm_medium=template&utm_term=nextjs"
-              target="_blank"
-              className="font-bold hover:underline"
-              rel="noreferrer"
-            >
-              Supabase
-            </a>
-          </p>
-          <ThemeSwitcher />
-        </footer>
+            <p>
+              Powered by{" "}
+              <a
+                href="https://supabase.com/?utm_source=create-next-app&utm_medium=template&utm_term=nextjs"
+                target="_blank"
+                className="font-bold hover:underline"
+                rel="noreferrer"
+              >
+                Supabase
+              </a>
+            </p>
+            <ThemeSwitcher />
+          </footer>
         </ThemeProvider>
       </body>
     </html>

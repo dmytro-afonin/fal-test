@@ -5,15 +5,16 @@ import { handleFalError } from "./helpers";
 
 export async function generateImageAction(imageUrl: string) {
   try {
-
     const result = await fal.subscribe("fal-ai/qwen-image-edit-plus-lora", {
       input: {
         prompt: "make image realistic",
         image_urls: [imageUrl],
-        loras: [{
-          path: "https://huggingface.co/WILDFAL/wildfaltest_qwwen_edit/resolve/main/A2R_2509_Base.safetensors?download=true",
-          scale: 1.0
-        }]
+        loras: [
+          {
+            path: "https://huggingface.co/WILDFAL/wildfaltest_qwwen_edit/resolve/main/A2R_2509_Base.safetensors?download=true",
+            scale: 1.0,
+          },
+        ],
       },
       logs: true,
       onQueueUpdate: (update) => {
@@ -24,7 +25,7 @@ export async function generateImageAction(imageUrl: string) {
       },
     });
 
-    if (result.data && result.data.images && result.data.images.length > 0) {
+    if (result.data?.images?.length > 0) {
       return {
         success: true,
         imageUrl: result.data.images[0].url,

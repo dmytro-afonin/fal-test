@@ -1,10 +1,10 @@
 export interface CreditPackage {
-  id: string
-  name: string
-  description: string
-  credits: number
-  priceInCents: number
-  popular?: boolean
+  id: string;
+  name: string;
+  description: string;
+  credits: number;
+  priceInCents: number;
+  popular?: boolean;
 }
 
 // Credit packages available for purchase
@@ -38,4 +38,4 @@ export const CREDIT_PACKAGES: CreditPackage[] = [
     credits: 5000,
     priceInCents: 29999, // $299.99
   },
-]
+];

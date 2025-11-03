@@ -1,24 +1,25 @@
-'use client'
+"use client";
 
+import type { JwtPayload } from "@supabase/supabase-js";
 import Link from "next/link";
-import { Button } from "./ui/button";
+import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { LogoutButton } from "./logout-button";
-import { useEffect, useState } from "react";
+import { Button } from "./ui/button";
 
 export default function AuthButton() {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<JwtPayload | undefined>();
   useEffect(() => {
     async function getUser() {
       const supabase = createClient();
 
       // You can also use getUser() which will be slower.
       const { data } = await supabase.auth.getClaims();
-    
+
       setUser(data?.claims);
     }
     getUser();
-  }, [])
+  }, []);
 
   return user ? (
     <div className="flex items-center gap-4">
