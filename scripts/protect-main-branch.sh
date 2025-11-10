@@ -49,19 +49,38 @@ fi
 
 echo -e "${GREEN}Configuring branch protection rules for 'main' branch...${NC}"
 
-# Configure branch protection
-# Note: This uses the GitHub API directly as gh CLI doesn't have a direct command for all settings
-gh api "repos/${OWNER}/${REPO}/branches/main/protection" \
-  --method PUT \
-  --field required_status_checks='{"strict":true,"contexts":[]}' \
-  --field enforce_admins=true \
-  --field required_pull_request_reviews="{\"required_approving_review_count\":${REQUIRED_APPROVALS},\"dismiss_stale_reviews\":true,\"require_code_owner_reviews\":false}" \
-  --field restrictions=null \
-  --field allow_force_pushes=false \
-  --field allow_deletions=false \
-  --jq '.' > /dev/null 2>&1
+# Create temporary JSON file for the protection settings
+TEMP_JSON=$(mktemp)
+cat > "$TEMP_JSON" <<EOF
+{
+  "required_status_checks": {
+    "strict": true,
+    "contexts": []
+  },
+  "enforce_admins": true,
+  "required_pull_request_reviews": {
+    "required_approving_review_count": ${REQUIRED_APPROVALS},
+    "dismiss_stale_reviews": true,
+    "require_code_owner_reviews": false
+  },
+  "restrictions": null,
+  "allow_force_pushes": false,
+  "allow_deletions": false
+}
+EOF
 
-if [ $? -eq 0 ]; then
+# Configure branch protection using JSON file
+RESPONSE=$(gh api "repos/${OWNER}/${REPO}/branches/main/protection" \
+  --method PUT \
+  --input "$TEMP_JSON" \
+  2>&1)
+
+# Clean up temp file
+rm -f "$TEMP_JSON"
+
+EXIT_CODE=$?
+
+if [ $EXIT_CODE -eq 0 ]; then
     echo -e "${GREEN}✓ Branch protection rules configured successfully!${NC}"
     echo ""
     echo "Protection settings:"
@@ -79,7 +98,15 @@ if [ $? -eq 0 ]; then
     fi
 else
     echo -e "${RED}Error: Failed to configure branch protection rules.${NC}"
-    echo "Make sure you have admin access to the repository."
+    echo ""
+    echo "API Response:"
+    echo "$RESPONSE"
+    echo ""
+    echo "Common issues:"
+    echo "  - Make sure you have admin access to the repository"
+    echo "  - Verify the repository owner and name are correct"
+    echo "  - Check that the 'main' branch exists"
+    echo "  - Ensure you're authenticated: gh auth login"
     exit 1
 fi
 

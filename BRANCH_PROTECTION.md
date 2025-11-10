@@ -56,15 +56,32 @@ Alternatively, use the `gh` CLI directly:
 ```bash
 # Make sure you're authenticated: gh auth login
 
+# Create a JSON file with protection settings
+cat > /tmp/protection.json <<'EOF'
+{
+  "required_status_checks": {
+    "strict": true,
+    "contexts": []
+  },
+  "enforce_admins": true,
+  "required_pull_request_reviews": {
+    "required_approving_review_count": 0,
+    "dismiss_stale_reviews": true,
+    "require_code_owner_reviews": false
+  },
+  "restrictions": null,
+  "allow_force_pushes": false,
+  "allow_deletions": false
+}
+EOF
+
 # Set branch protection rules (0 approvals for solo developer)
 gh api repos/:owner/:repo/branches/main/protection \
   --method PUT \
-  --field required_status_checks='{"strict":true,"contexts":[]}' \
-  --field enforce_admins=true \
-  --field required_pull_request_reviews='{"required_approving_review_count":0,"dismiss_stale_reviews":true,"require_code_owner_reviews":false}' \
-  --field restrictions=null \
-  --field allow_force_pushes=false \
-  --field allow_deletions=false
+  --input /tmp/protection.json
+
+# Clean up
+rm /tmp/protection.json
 ```
 
 Replace `:owner` and `:repo` with your repository owner and name.
