@@ -1,5 +1,6 @@
 {
   "lockfileVersion": 1,
+  "configVersion": 1,
   "workspaces": {
     "": {
       "name": "fal-test",
@@ -16,7 +17,6 @@
         "@supabase/supabase-js": "^2.76.1",
         "@tanstack/react-query": "^5.90.6",
         "@tanstack/react-query-devtools": "^5.90.2",
-        "@tanstack/react-query-next-experimental": "^5.90.2",
         "@vercel/blob": "^2.0.0",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
@@ -279,8 +279,6 @@
     "@tanstack/react-query": ["@tanstack/react-query@5.90.6", "", { "dependencies": { "@tanstack/query-core": "5.90.6" }, "peerDependencies": { "react": "^18 || ^19" } }, "sha512-gB1sljYjcobZKxjPbKSa31FUTyr+ROaBdoH+wSSs9Dk+yDCmMs+TkTV3PybRRVLC7ax7q0erJ9LvRWnMktnRAw=="],
 
     "@tanstack/react-query-devtools": ["@tanstack/react-query-devtools@5.90.2", "", { "dependencies": { "@tanstack/query-devtools": "5.90.1" }, "peerDependencies": { "@tanstack/react-query": "^5.90.2", "react": "^18 || ^19" } }, "sha512-vAXJzZuBXtCQtrY3F/yUNJCV4obT/A/n81kb3+YqLbro5Z2+phdAbceO+deU3ywPw8B42oyJlp4FhO0SoivDFQ=="],
-
-    "@tanstack/react-query-next-experimental": ["@tanstack/react-query-next-experimental@5.90.2", "", { "peerDependencies": { "@tanstack/react-query": "^5.90.2", "next": "^13 || ^14 || ^15", "react": "^18 || ^19" } }, "sha512-f7vJ9SHRO5GjiTBIpaSdLTczPlDybu6OzLG2thcNev55Qi69JkYsSOyUVWKpa3tGgufyJx1kDAO5lJjv4jF/bw=="],
 
     "@types/node": ["@types/node@20.19.21", "", { "dependencies": { "undici-types": "~6.21.0" } }, "sha512-CsGG2P3I5y48RPMfprQGfy4JPRZ6csfC3ltBZSRItG3ngggmNY/qs2uZKp4p9VbrpqNNSMzUZNFZKzgOGnd/VA=="],
 
