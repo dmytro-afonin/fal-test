@@ -262,7 +262,7 @@ export async function POST(request: NextRequest) {
         type: "refund",
         amount: creditCost,
         balance_after: profile.credits,
-        description: `Refund for failed generation - Pipeline: ${pipeline.name}`,
+        description: `Refund for failed generation - Pipeline: ${preset.name}`,
         metadata: {
           pipeline_id: pipelineId,
           generation_id: generation.id,
