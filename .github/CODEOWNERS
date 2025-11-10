@@ -1,0 +1,36 @@
+# CODEOWNERS file
+# This file defines code owners for different parts of the repository.
+# When enabled in branch protection rules, pull requests require approval
+# from code owners before they can be merged.
+#
+# Syntax: <pattern> <owner1> <owner2> ... <ownerN>
+# Patterns follow gitignore syntax
+# Owners can be GitHub usernames or team names (prefixed with @)
+#
+# Example:
+# * @username
+# /app/ @team-frontend
+# /lib/ @username @username2
+# *.ts @team-typescript
+
+# Default owners for all files
+# Replace @your-username with your actual GitHub username or team
+* @your-username
+
+# Specific paths can have different owners
+# Uncomment and customize as needed:
+
+# API routes
+# /app/api/ @your-username
+
+# Database scripts
+# /scripts/*.sql @your-username
+
+# Configuration files
+# *.json @your-username
+# *.ts @your-username
+# *.tsx @your-username
+
+# Documentation
+# *.md @your-username
+
