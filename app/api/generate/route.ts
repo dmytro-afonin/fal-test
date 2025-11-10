@@ -50,23 +50,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Fetch pipeline configuration
-    const { data: pipeline, error: pipelineError } = await supabase
-      .from("pipelines")
+    // Fetch preset configuration
+    const { data: preset, error: presetError } = await supabase
+      .from("fal_presets")
       .select("*")
       .eq("id", pipelineId)
       .single();
 
-    if (pipelineError || !pipeline) {
-      console.error("[v0] Pipeline error:", pipelineError);
-      return NextResponse.json(
-        { error: "Pipeline not found" },
-        { status: 404 },
-      );
+    if (presetError || !preset) {
+      console.error("[v0] Preset error:", presetError);
+      return NextResponse.json({ error: "Preset not found" }, { status: 404 });
     }
 
     const { megapixels } = await getImageDimensions(imageUrl);
-    const baseCost = pipeline.credit_cost || 10;
+    const baseCost = preset.credit_cost || 10;
     const creditCost = Math.max(
       baseCost,
       Math.ceil(baseCost * Math.ceil(megapixels)),
@@ -131,12 +128,17 @@ export async function POST(request: NextRequest) {
 
     // Create generation record
     const { data: generation, error: generationError } = await supabase
-      .from("generations")
+      .from("fal_generations")
       .insert({
-        pipeline_id: pipelineId,
-        input_image_url: imageUrl,
         user_id: user.id,
-        status: "processing",
+        model_id: preset.model_id,
+        status: "pending",
+        input_data: {
+          image_urls: [imageUrl],
+          ...preset.input_template,
+        },
+        credit_cost: creditCost,
+        preset_id: preset.id,
       })
       .select()
       .single();
@@ -158,26 +160,31 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Prepare fal.ai input
-    const falInput: Record<string, unknown> = {
-      image_urls: [imageUrl],
-      ...(pipeline.config as Record<string, unknown>),
-    };
+    // Prepare fal.ai input from generation input_data
+    const falInput: Record<string, unknown> = generation.input_data as Record<
+      string,
+      unknown
+    >;
 
-    if (pipeline.prompt) {
-      falInput.prompt = pipeline.prompt;
-    }
+    console.log("Calling fal.ai with model:", preset.model_id);
+    console.log("Input:", JSON.stringify(falInput, null, 2));
 
-    console.log("[v0] Calling fal.ai with model:", pipeline.model_id);
-    console.log("[v0] Input:", JSON.stringify(falInput, null, 2));
+    // Update generation status to processing
+    await supabase
+      .from("fal_generations")
+      .update({
+        status: "processing",
+        started_at: new Date().toISOString(),
+      })
+      .eq("id", generation.id);
 
     let result: { data: { images: { url: string }[] } };
     try {
-      result = await fal.subscribe(pipeline.model_id, {
+      result = await fal.subscribe(preset.model_id, {
         input: falInput,
         logs: true,
       });
-      console.log("[v0] fal.ai result:", JSON.stringify(result, null, 2));
+      console.log("fal.ai result:", JSON.stringify(result, null, 2));
     } catch (falError: unknown) {
       console.error(falError);
       let errorMessage = JSON.stringify(falError);
@@ -186,10 +193,11 @@ export async function POST(request: NextRequest) {
       }
       // Update generation with error
       await supabase
-        .from("generations")
+        .from("fal_generations")
         .update({
           status: "failed",
           error: errorMessage,
+          completed_at: new Date().toISOString(),
         })
         .eq("id", generation.id);
 
@@ -206,9 +214,9 @@ export async function POST(request: NextRequest) {
         type: "refund",
         amount: creditCost,
         balance_after: profile.credits,
-        description: `Refund for failed generation - Pipeline: ${pipeline.name}`,
+        description: `Refund for failed generation - Preset: ${preset.name}`,
         metadata: {
-          pipeline_id: pipelineId,
+          preset_id: pipelineId,
           generation_id: generation.id,
           error: errorMessage,
         },
@@ -233,10 +241,11 @@ export async function POST(request: NextRequest) {
 
       // Update generation with error
       await supabase
-        .from("generations")
+        .from("fal_generations")
         .update({
           status: "failed",
           error: "No image generated - unexpected response structure",
+          completed_at: new Date().toISOString(),
         })
         .eq("id", generation.id);
 
@@ -272,10 +281,12 @@ export async function POST(request: NextRequest) {
 
     // Update generation with result
     const { error: updateError } = await supabase
-      .from("generations")
+      .from("fal_generations")
       .update({
-        output_image_url: outputImageUrl,
         status: "completed",
+        output_data: result.data,
+        image_urls: result.data.images.map((img: { url: string }) => img.url),
+        completed_at: new Date().toISOString(),
       })
       .eq("id", generation.id);
 
@@ -288,9 +299,9 @@ export async function POST(request: NextRequest) {
       type: "generation",
       amount: -creditCost,
       balance_after: newBalance,
-      description: `Image generation - Pipeline: ${pipeline.name}`,
+      description: `Image generation - Preset: ${preset.name}`,
       metadata: {
-        pipeline_id: pipelineId,
+        preset_id: pipelineId,
         generation_id: generation.id,
         megapixels: megapixels,
         base_cost: baseCost,
@@ -301,7 +312,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       generationId: generation.id,
-      outputImageUrl,
+      outputImageUrl: outputImageUrl,
       creditsUsed: creditCost,
       creditsRemaining: newBalance,
     });

@@ -1,16 +1,13 @@
+import "./globals.css";
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
-import { ThemeProvider } from "@/components/theme-provider";
-import "./globals.css";
 import Header from "@/components/header";
 import { ThemeSwitcher } from "@/components/theme-switcher";
-
-const defaultUrl = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
-  : "http://localhost:3000";
+import { getBaseURL } from "@/lib/utils";
+import { Providers } from "./providers";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(defaultUrl),
+  metadataBase: new URL(getBaseURL()),
   title: "Deegva | AI",
   description: "The best replacement for image pipelines",
 };
@@ -23,20 +20,13 @@ const geistSans = Geist({
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.className} antialiased flex flex-col min-h-screen`}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
+        <Providers>
           <header>
             <Header />
           </header>
@@ -55,7 +45,7 @@ export default function RootLayout({
             </p>
             <ThemeSwitcher />
           </footer>
-        </ThemeProvider>
+        </Providers>
       </body>
     </html>
   );

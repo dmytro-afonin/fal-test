@@ -17,15 +17,31 @@ export default async function EditPipelinePage({
   const { id } = await params;
   const supabase = await createClient();
 
-  const { data: pipeline, error } = await supabase
-    .from("pipelines")
+  const { data: preset, error } = await supabase
+    .from("fal_presets")
     .select("*")
     .eq("id", id)
     .single();
 
-  if (error || !pipeline) {
+  if (error || !preset) {
     notFound();
   }
+
+  // Convert preset to pipeline format for EditPipelineForm component
+  const inputTemplate = preset.input_template as Record<string, unknown>;
+  const { prompt, ...config } = inputTemplate;
+
+  const pipeline = {
+    id: preset.id,
+    name: preset.name,
+    description: preset.description || "",
+    model_id: preset.model_id,
+    prompt: (prompt as string) || null,
+    config: config || {},
+    before_image_url: preset.image_before || "",
+    after_image_url: preset.image_after || "",
+    credit_cost: preset.credit_cost,
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">

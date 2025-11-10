@@ -65,7 +65,15 @@ export function EditPipelineForm({ pipeline }: EditPipelineFormProps) {
         }
       }
 
-      const response = await fetch(`/api/pipelines/${pipeline.id}`, {
+      // Build input_template from prompt and config
+      const inputTemplate: Record<string, unknown> = {
+        ...configJson,
+      };
+      if (formData.prompt) {
+        inputTemplate.prompt = formData.prompt;
+      }
+
+      const response = await fetch(`/api/preset/${pipeline.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -74,10 +82,9 @@ export function EditPipelineForm({ pipeline }: EditPipelineFormProps) {
           name: formData.name,
           description: formData.description,
           model_id: formData.modelId,
-          prompt: formData.prompt || null,
-          config: configJson,
-          before_image_url: formData.beforeImageUrl,
-          after_image_url: formData.afterImageUrl,
+          input_template: inputTemplate,
+          image_before: formData.beforeImageUrl,
+          image_after: formData.afterImageUrl,
           credit_cost: Number.parseInt(formData.creditCost, 10),
         }),
       });
@@ -222,22 +229,17 @@ export function EditPipelineForm({ pipeline }: EditPipelineFormProps) {
                 }
                 required
               />
-              {formData.beforeImageUrl && (
-                <div className="mt-2">
+              {formData.beforeImageUrl ? (
+                <div className="mt-2 relative w-full max-w-xs aspect-video rounded-lg overflow-hidden bg-muted">
                   <Image
                     fill
-                    src={formData.beforeImageUrl || "/placeholder.svg"}
+                    src={formData.beforeImageUrl}
                     alt="Before preview"
-                    className="w-full max-w-xs aspect-video object-cover rounded-lg"
-                    onError={() => {
-                      console.log(
-                        "[v0] Failed to load before image preview:",
-                        formData.beforeImageUrl,
-                      );
-                    }}
+                    className="object-cover"
+                    unoptimized
                   />
                 </div>
-              )}
+              ) : null}
             </div>
 
             <div>
@@ -252,22 +254,17 @@ export function EditPipelineForm({ pipeline }: EditPipelineFormProps) {
                 }
                 required
               />
-              {formData.afterImageUrl && (
-                <div className="mt-2">
+              {formData.afterImageUrl ? (
+                <div className="mt-2 relative w-full max-w-xs aspect-video rounded-lg overflow-hidden bg-muted">
                   <Image
                     fill
-                    src={formData.afterImageUrl || "/placeholder.svg"}
+                    src={formData.afterImageUrl}
                     alt="After preview"
-                    className="w-full max-w-xs aspect-video object-cover rounded-lg"
-                    onError={() => {
-                      console.log(
-                        "[v0] Failed to load after image preview:",
-                        formData.afterImageUrl,
-                      );
-                    }}
+                    className="object-cover"
+                    unoptimized
                   />
                 </div>
-              )}
+              ) : null}
             </div>
           </div>
 

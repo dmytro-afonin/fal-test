@@ -2,7 +2,6 @@
 
 import { ExternalLink, Pencil, Trash2 } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,14 +12,15 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { BeforeAfterSlider } from "./before-after-slider";
+import { ImagePlaceholder } from "./image-placeholder";
 
 interface Pipeline {
   id: string;
   name: string;
   description: string;
   model_id: string;
-  before_image_url: string;
-  after_image_url: string;
+  image_before: string | null;
+  image_after: string | null;
   created_at: string;
 }
 
@@ -33,14 +33,13 @@ export function PipelineList({
 }: PipelineListProps) {
   const [pipelines, setPipelines] = useState(initialPipelines);
   const [deletingId, setDeletingId] = useState<string | null>(null);
-  const router = useRouter();
 
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this pipeline?")) return;
 
     setDeletingId(id);
     try {
-      const response = await fetch(`/api/pipelines/${id}`, {
+      const response = await fetch(`/api/preset/${id}`, {
         method: "DELETE",
       });
 
@@ -49,7 +48,7 @@ export function PipelineList({
       }
 
       setPipelines(pipelines.filter((p) => p.id !== id));
-      router.refresh();
+      // Don't refresh to avoid loops - state update is enough
     } catch (error) {
       console.error("[v0] Error deleting pipeline:", error);
       alert("Failed to delete pipeline");
@@ -111,11 +110,20 @@ export function PipelineList({
             </div>
           </CardHeader>
           <CardContent>
-            <BeforeAfterSlider
-              beforeImage={pipeline.after_image_url || "/placeholder.svg"}
-              afterImage={pipeline.after_image_url || "/placeholder.svg"}
-              alt={pipeline.name}
-            />
+            {pipeline.image_before || pipeline.image_after ? (
+              <BeforeAfterSlider
+                beforeImage={pipeline.image_before || undefined}
+                afterImage={pipeline.image_after || undefined}
+                alt={pipeline.name}
+              />
+            ) : (
+              <div className="w-full aspect-video rounded-lg overflow-hidden">
+                <ImagePlaceholder
+                  className="w-full h-full"
+                  label="No preview images"
+                />
+              </div>
+            )}
           </CardContent>
         </Card>
       ))}

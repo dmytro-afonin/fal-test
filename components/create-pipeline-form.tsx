@@ -48,7 +48,15 @@ export function CreatePipelineForm() {
         }
       }
 
-      const response = await fetch("/api/pipelines", {
+      // Build input_template from prompt and config
+      const inputTemplate: Record<string, unknown> = {
+        ...configJson,
+      };
+      if (formData.prompt) {
+        inputTemplate.prompt = formData.prompt;
+      }
+
+      const response = await fetch("/api/preset", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -57,10 +65,9 @@ export function CreatePipelineForm() {
           name: formData.name,
           description: formData.description,
           model_id: formData.modelId,
-          prompt: formData.prompt || null,
-          config: configJson,
-          before_image_url: formData.beforeImageUrl,
-          after_image_url: formData.afterImageUrl,
+          input_template: inputTemplate,
+          image_before: formData.beforeImageUrl,
+          image_after: formData.afterImageUrl,
           credit_cost: Number.parseInt(formData.creditCost, 10),
         }),
       });

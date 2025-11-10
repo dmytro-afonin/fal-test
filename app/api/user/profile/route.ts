@@ -5,13 +5,12 @@ export async function GET() {
   try {
     const supabase = await createClient();
 
-    // Get current user
     const {
       data: { user },
-      error: authError,
+      error,
     } = await supabase.auth.getUser();
 
-    if (authError || !user) {
+    if (error || !user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 

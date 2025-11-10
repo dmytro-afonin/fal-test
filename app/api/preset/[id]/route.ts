@@ -11,32 +11,32 @@ export async function PUT(
     const body = await request.json();
 
     const { error } = await supabase
-      .from("pipelines")
+      .from("fal_presets")
       .update({
         name: body.name,
         description: body.description,
         model_id: body.model_id,
-        prompt: body.prompt,
-        config: body.config,
-        before_image_url: body.before_image_url,
-        after_image_url: body.after_image_url,
-        updated_at: new Date().toISOString(),
+        input_template: body.input_template,
+        credit_cost: body.credit_cost,
+        image_before: body.image_before,
+        image_after: body.image_after,
+        is_public: body.is_public,
       })
       .eq("id", id);
 
     if (error) {
-      console.error("[v0] Error updating pipeline:", error);
+      console.error("[v0] Error updating preset:", error);
       return NextResponse.json(
-        { error: "Failed to update pipeline" },
+        { error: "Failed to update preset" },
         { status: 500 },
       );
     }
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("[v0] Error updating pipeline:", error);
+    console.error("[v0] Error updating preset:", error);
     return NextResponse.json(
-      { error: "Failed to update pipeline" },
+      { error: "Failed to update preset" },
       { status: 500 },
     );
   }
@@ -50,21 +50,21 @@ export async function DELETE(
     const { id } = await params;
     const supabase = await createClient();
 
-    const { error } = await supabase.from("pipelines").delete().eq("id", id);
+    const { error } = await supabase.from("fal_presets").delete().eq("id", id);
 
     if (error) {
-      console.error("[v0] Error deleting pipeline:", error);
+      console.error("[v0] Error deleting preset:", error);
       return NextResponse.json(
-        { error: "Failed to delete pipeline" },
+        { error: "Failed to delete preset" },
         { status: 500 },
       );
     }
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("[v0] Error deleting pipeline:", error);
+    console.error("[v0] Error deleting preset:", error);
     return NextResponse.json(
-      { error: "Failed to delete pipeline" },
+      { error: "Failed to delete preset" },
       { status: 500 },
     );
   }

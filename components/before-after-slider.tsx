@@ -3,10 +3,11 @@
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
+import { ImagePlaceholder } from "./image-placeholder";
 
 interface BeforeAfterSliderProps {
-  beforeImage: string;
-  afterImage: string;
+  beforeImage?: string;
+  afterImage?: string;
   alt: string;
   className?: string;
 }
@@ -19,6 +20,8 @@ export function BeforeAfterSlider({
 }: BeforeAfterSliderProps) {
   const [sliderPosition, setSliderPosition] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
+  const [beforeImageError, setBeforeImageError] = useState(false);
+  const [afterImageError, setAfterImageError] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const handleMove = useCallback((clientX: number) => {
@@ -84,18 +87,20 @@ export function BeforeAfterSlider({
     >
       {/* After Image (Background) */}
       <div className="absolute inset-0">
-        <Image
-          loading="lazy"
-          src={afterImage || "/placeholder.svg"}
-          alt={`${alt} - after`}
-          fill
-          className="w-full h-full object-cover"
-          draggable={false}
-          onError={(e) => {
-            console.log("[v0] Failed to load after image:", afterImage);
-            e.currentTarget.src = "/after-text.png";
-          }}
-        />
+        {afterImage && !afterImageError ? (
+          <Image
+            loading="lazy"
+            src={afterImage}
+            alt={`${alt} - after`}
+            fill
+            className="w-full h-full object-cover"
+            draggable={false}
+            unoptimized
+            onError={() => setAfterImageError(true)}
+          />
+        ) : (
+          <ImagePlaceholder className="w-full h-full" label="After" />
+        )}
       </div>
 
       {/* Before Image (Clipped) */}
@@ -105,18 +110,20 @@ export function BeforeAfterSlider({
           clipPath: `inset(0 ${100 - sliderPosition}% 0 0)`,
         }}
       >
-        <Image
-          loading="lazy"
-          src={beforeImage || "/placeholder.svg"}
-          alt={`${alt} - before`}
-          fill
-          className="w-full h-full object-cover"
-          draggable={false}
-          onError={(e) => {
-            console.log("[v0] Failed to load before image:", beforeImage);
-            e.currentTarget.src = "/before-text.png";
-          }}
-        />
+        {beforeImage && !beforeImageError ? (
+          <Image
+            loading="lazy"
+            src={beforeImage}
+            alt={`${alt} - before`}
+            fill
+            className="w-full h-full object-cover"
+            draggable={false}
+            unoptimized
+            onError={() => setBeforeImageError(true)}
+          />
+        ) : (
+          <ImagePlaceholder className="w-full h-full" label="Before" />
+        )}
       </div>
 
       {/* Slider Line */}

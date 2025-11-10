@@ -8,18 +8,20 @@ export async function POST(request: NextRequest) {
       name,
       description,
       model_id,
-      prompt,
-      config,
-      before_image_url,
-      after_image_url,
+      input_template,
+      credit_cost,
+      image_before,
+      image_after,
+      is_public,
     } = body;
 
     if (
       !name ||
       !description ||
       !model_id ||
-      !before_image_url ||
-      !after_image_url
+      !input_template ||
+      !image_before ||
+      !image_after
     ) {
       return NextResponse.json(
         { error: "Missing required fields" },
@@ -30,32 +32,33 @@ export async function POST(request: NextRequest) {
     const supabase = await createClient();
 
     const { data, error } = await supabase
-      .from("pipelines")
+      .from("fal_presets")
       .insert({
         name,
         description,
         model_id,
-        prompt,
-        config,
-        before_image_url,
-        after_image_url,
+        input_template,
+        credit_cost: credit_cost || 10,
+        image_before,
+        image_after,
+        is_public: is_public || false,
       })
       .select()
       .single();
 
     if (error) {
-      console.error("Error creating pipeline:", error);
+      console.error("Error creating preset:", error);
       return NextResponse.json(
-        { error: "Failed to create pipeline" },
+        { error: "Failed to create preset" },
         { status: 500 },
       );
     }
 
     return NextResponse.json(data);
   } catch (error) {
-    console.error("Error creating pipeline:", error);
+    console.error("Error creating preset:", error);
     return NextResponse.json(
-      { error: "Failed to create pipeline" },
+      { error: "Failed to create preset" },
       { status: 500 },
     );
   }
