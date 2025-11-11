@@ -1,4 +1,4 @@
-import { CreatePipelineForm } from "@/components/create-pipeline-form";
+import { CreatePipelineForm } from "@/components/admin/create-pipeline-form";
 
 export default function CreatePipelinePage() {
   return (

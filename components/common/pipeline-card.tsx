@@ -1,6 +1,5 @@
 import { Coins } from "lucide-react";
 import Link from "next/link";
-import { BeforeAfterSlider } from "@/components/before-after-slider";
 import {
   Card,
   CardContent,
@@ -8,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { BeforeAfterSlider } from "./before-after-slider";
 
 interface PipelineCardProps {
   id: string;

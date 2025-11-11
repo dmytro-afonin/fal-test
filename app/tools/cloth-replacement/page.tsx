@@ -1,4 +1,4 @@
-import { CloseReplacement } from "@/components/cloth-replacement";
+import { CloseReplacement } from "@/components/common/cloth-replacement";
 
 export default async function Page() {
   return (

@@ -4,8 +4,7 @@ import type { JwtPayload } from "@supabase/supabase-js";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { LogoutButton } from "./logout-button";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 
 export default function AuthButton() {
   const [user, setUser] = useState<JwtPayload | undefined>();
@@ -21,12 +20,13 @@ export default function AuthButton() {
     getUser();
   }, []);
 
-  return user ? (
-    <div className="flex items-center gap-4">
-      {user.email}
-      <LogoutButton />
-    </div>
-  ) : (
+  // Only show sign in/sign up buttons when user is not logged in
+  // When logged in, the UserAvatar component handles the user menu
+  if (user) {
+    return null;
+  }
+
+  return (
     <div className="flex gap-2">
       <Button asChild size="sm" variant="outline">
         <Link href="/auth/login">Sign in</Link>

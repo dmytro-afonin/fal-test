@@ -3,7 +3,7 @@
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { PipelineGallery } from "@/components/pipeline-gallery";
+import { PipelineGallery } from "@/components/admin/pipeline-gallery";
 import { Button } from "@/components/ui/button";
 
 interface Preset {

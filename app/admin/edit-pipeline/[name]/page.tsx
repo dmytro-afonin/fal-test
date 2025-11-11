@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { EditCustomPipelineForm } from "@/components/edit-custom-pipeline-form";
+import { EditCustomPipelineForm } from "@/components/admin/edit-custom-pipeline-form";
 import { createClient } from "@/lib/supabase/server";
 
 interface EditPipelinePageProps {

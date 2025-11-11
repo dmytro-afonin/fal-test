@@ -5,7 +5,6 @@ import NextImage from "next/image";
 import { useRouter } from "next/navigation";
 import type React from "react";
 import { useState } from "react";
-import { BeforeAfterSlider } from "@/components/before-after-slider";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,6 +15,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useUpdateUserCredits, useUser } from "@/hooks/useUser";
+import { BeforeAfterSlider } from "./before-after-slider";
 
 export function CloseReplacement() {
   const CREDIT_COST = 80;

@@ -5,18 +5,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Suspense, useState } from "react";
-import { useUser } from "@/hooks/useUser";
-import { createClient } from "@/lib/supabase/client";
-import { cn } from "@/lib/utils";
-import AuthButton from "../auth/AuthButton";
-import { ThemeSwitcher } from "./theme-switcher";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -25,8 +20,13 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
-} from "./ui/navigation-menu";
-import { Skeleton } from "./ui/skeleton";
+} from "@/components/ui/navigation-menu";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useUser } from "@/hooks/useUser";
+import { createClient } from "@/lib/supabase/client";
+import { cn } from "@/lib/utils";
+import AuthButton from "../auth/auth-button";
+import { ThemeSwitcher } from "./theme-switcher";
 
 export const runtime = "edge"; // 'nodejs' (default) | 'edge'
 
@@ -89,6 +89,10 @@ function UserData() {
     if (path === "/studio" || path === "/") {
       return pathname === "/studio" || pathname === "/";
     }
+    if (path === "/admin") {
+      // Don't mark admin as active - it's a dropdown, not a direct link
+      return false;
+    }
     return pathname === path || pathname.startsWith(`${path}/`);
   };
 
@@ -101,7 +105,11 @@ function UserData() {
   return (
     <>
       {/* Desktop Navigation */}
-      <NavigationMenu className="hidden md:flex">
+      <NavigationMenu
+        className="hidden md:flex"
+        viewport={false}
+        delayDuration={0}
+      >
         <NavigationMenuList>
           {navLinks.map((link) => (
             <NavigationMenuItem key={link.href}>
@@ -120,7 +128,9 @@ function UserData() {
 
           {query.data?.user?.role === "admin" && (
             <NavigationMenuItem>
-              <NavigationMenuTrigger>ADMIN</NavigationMenuTrigger>
+              <NavigationMenuTrigger className={navigationMenuTriggerStyle()}>
+                ADMIN
+              </NavigationMenuTrigger>
               <NavigationMenuContent>
                 <ul className="grid w-[200px] gap-1 p-2">
                   <li>
