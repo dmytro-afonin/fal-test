@@ -5,11 +5,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Suspense, useState } from "react";
+import AuthButton from "@/components/auth/auth-button";
+import { ThemeSwitcher } from "@/components/common/theme-switcher";
 import { useUser } from "@/hooks/useUser";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
-import AuthButton from "../auth/AuthButton";
-import { ThemeSwitcher } from "./theme-switcher";
 import { Button } from "./ui/button";
 import {
   DropdownMenu,

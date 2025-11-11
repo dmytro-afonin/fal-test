@@ -11,8 +11,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { BeforeAfterSlider } from "./before-after-slider";
-import { ImagePlaceholder } from "./image-placeholder";
+import { BeforeAfterSlider } from "../common/before-after-slider";
+import { ImagePlaceholder } from "../common/image-placeholder";
 
 interface Pipeline {
   id: string;
