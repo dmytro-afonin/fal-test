@@ -4,6 +4,7 @@ export interface Profile {
   id: string;
   email: string;
   credits: number;
+  role?: string;
 }
 
 export function useUser() {

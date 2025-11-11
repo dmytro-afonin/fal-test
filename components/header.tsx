@@ -43,6 +43,38 @@ function UserData() {
           </Link>
         </NavigationMenuItem>
 
+        {query.data?.user?.role === "admin" && (
+          <>
+            <NavigationMenuItem>
+              <Link
+                href="/admin/presets"
+                className={navigationMenuTriggerStyle()}
+                prefetch
+              >
+                PRESETS
+              </Link>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <Link
+                href="/admin/pipelines"
+                className={navigationMenuTriggerStyle()}
+                prefetch
+              >
+                PIPELINES
+              </Link>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <Link
+                href="/admin/users"
+                className={navigationMenuTriggerStyle()}
+                prefetch
+              >
+                USERS
+              </Link>
+            </NavigationMenuItem>
+          </>
+        )}
+
         <NavigationMenuItem className="ml-10">
           <span className="mr-3">
             Credits: <b className="text-lg">{query.data.user.credits}</b>

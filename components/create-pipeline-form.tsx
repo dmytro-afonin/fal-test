@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader2 } from "lucide-react";
+import { CheckCircle2, Loader2, XCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import type React from "react";
 import { useState } from "react";
@@ -12,14 +12,17 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
 
 export function CreatePipelineForm() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [jsonError, setJsonError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -30,7 +33,51 @@ export function CreatePipelineForm() {
     beforeImageUrl: "",
     afterImageUrl: "",
     creditCost: "10",
+    isPublic: false,
   });
+
+  const validateJson = (
+    jsonString: string,
+  ): { valid: boolean; error?: string } => {
+    if (!jsonString.trim()) {
+      return { valid: true };
+    }
+    try {
+      JSON.parse(jsonString);
+      return { valid: true };
+    } catch (e) {
+      return {
+        valid: false,
+        error: e instanceof Error ? e.message : "Invalid JSON",
+      };
+    }
+  };
+
+  const formatJson = () => {
+    const validation = validateJson(formData.config);
+    if (validation.valid && formData.config.trim()) {
+      try {
+        const parsed = JSON.parse(formData.config);
+        setFormData({
+          ...formData,
+          config: JSON.stringify(parsed, null, 2),
+        });
+        setJsonError(null);
+      } catch {
+        // Should not happen since we validated
+      }
+    }
+  };
+
+  const handleConfigChange = (value: string) => {
+    setFormData({ ...formData, config: value });
+    const validation = validateJson(value);
+    if (validation.valid) {
+      setJsonError(null);
+    } else {
+      setJsonError(validation.error || "Invalid JSON");
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,13 +86,14 @@ export function CreatePipelineForm() {
 
     try {
       // Validate JSON config
+      const validation = validateJson(formData.config);
+      if (!validation.valid) {
+        throw new Error(`Invalid JSON: ${validation.error}`);
+      }
+
       let configJson = {};
       if (formData.config.trim()) {
-        try {
-          configJson = JSON.parse(formData.config);
-        } catch {
-          throw new Error("Invalid JSON in config field");
-        }
+        configJson = JSON.parse(formData.config);
       }
 
       // Build input_template from prompt and config
@@ -69,6 +117,7 @@ export function CreatePipelineForm() {
           image_before: formData.beforeImageUrl,
           image_after: formData.afterImageUrl,
           credit_cost: Number.parseInt(formData.creditCost, 10),
+          is_public: formData.isPublic,
         }),
       });
 
@@ -77,7 +126,7 @@ export function CreatePipelineForm() {
         throw new Error(errorData.error || "Failed to create pipeline");
       }
 
-      router.push("/admin");
+      router.push("/admin/presets");
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
@@ -86,10 +135,13 @@ export function CreatePipelineForm() {
     }
   };
 
+  const jsonValidation = validateJson(formData.config);
+  const isJsonValid = jsonValidation.valid || !formData.config.trim();
+
   return (
     <Card className="max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle>Pipeline Configuration</CardTitle>
+        <CardTitle>Create Preset</CardTitle>
         <CardDescription>
           Configure the fal.ai model and example images
         </CardDescription>
@@ -99,7 +151,7 @@ export function CreatePipelineForm() {
           {/* Basic Info */}
           <div className="space-y-4">
             <div>
-              <Label htmlFor="name">Pipeline Name</Label>
+              <Label htmlFor="name">Preset Name</Label>
               <Input
                 id="name"
                 placeholder="e.g., Background Removal"
@@ -115,13 +167,29 @@ export function CreatePipelineForm() {
               <Label htmlFor="description">Description</Label>
               <Textarea
                 id="description"
-                placeholder="Describe what this pipeline does..."
+                placeholder="Describe what this preset does..."
                 value={formData.description}
                 onChange={(e) =>
                   setFormData({ ...formData, description: e.target.value })
                 }
                 required
               />
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="isPublic"
+                checked={formData.isPublic}
+                onCheckedChange={(checked) =>
+                  setFormData({ ...formData, isPublic: checked === true })
+                }
+              />
+              <Label
+                htmlFor="isPublic"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+              >
+                Make this preset public
+              </Label>
             </div>
           </div>
 
@@ -164,18 +232,58 @@ export function CreatePipelineForm() {
             </div>
 
             <div>
-              <Label htmlFor="config">Additional Config (JSON)</Label>
+              <div className="flex items-center justify-between mb-2">
+                <Label htmlFor="config">Additional Config (JSON)</Label>
+                <div className="flex items-center gap-2">
+                  {formData.config.trim() && (
+                    <>
+                      {isJsonValid ? (
+                        <div className="flex items-center gap-1 text-xs text-green-600 dark:text-green-400">
+                          <CheckCircle2 className="h-3 w-3" />
+                          <span>Valid JSON</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-1 text-xs text-red-600 dark:text-red-400">
+                          <XCircle className="h-3 w-3" />
+                          <span>Invalid JSON</span>
+                        </div>
+                      )}
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={formatJson}
+                        disabled={!isJsonValid}
+                        className="h-7 text-xs"
+                      >
+                        Format JSON
+                      </Button>
+                    </>
+                  )}
+                </div>
+              </div>
               <Textarea
                 id="config"
                 placeholder='{"num_inference_steps": 4, "image_size": "square_hd"}'
                 value={formData.config}
-                onChange={(e) =>
-                  setFormData({ ...formData, config: e.target.value })
-                }
-                className="font-mono text-sm"
+                onChange={(e) => handleConfigChange(e.target.value)}
+                className={cn(
+                  "font-mono text-sm min-h-[120px]",
+                  jsonError
+                    ? "border-red-500 focus-visible:ring-red-500"
+                    : isJsonValid && formData.config.trim()
+                      ? "border-green-500 focus-visible:ring-green-500"
+                      : "",
+                )}
               />
+              {jsonError && (
+                <p className="text-xs text-red-600 dark:text-red-400 mt-1">
+                  {jsonError}
+                </p>
+              )}
               <p className="text-xs text-muted-foreground mt-1">
-                Additional parameters for the model (must be valid JSON)
+                Additional parameters for the model (must be valid JSON). Use
+                "Format JSON" to auto-format.
               </p>
             </div>
 
@@ -239,17 +347,17 @@ export function CreatePipelineForm() {
 
           <Button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isSubmitting || !isJsonValid}
             className="w-full"
             size="lg"
           >
             {isSubmitting ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Creating Pipeline...
+                Creating Preset...
               </>
             ) : (
-              "Create Pipeline"
+              "Create Preset"
             )}
           </Button>
         </form>
