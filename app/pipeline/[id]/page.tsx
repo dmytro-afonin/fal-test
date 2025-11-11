@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { PipelineExecutor } from "@/components/pipeline-executor";
+import { PipelineExecutor } from "@/components/common/pipeline-executor";
 import { createClient } from "@/lib/supabase/server";
 
 interface PipelinePageProps {

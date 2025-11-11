@@ -3,7 +3,7 @@
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { PresetGallery } from "@/components/preset-gallery";
+import { PresetGallery } from "@/components/admin/preset-gallery";
 import { Button } from "@/components/ui/button";
 
 interface Preset {

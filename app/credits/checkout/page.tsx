@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import Checkout from "@/components/checkout";
+import Checkout from "@/components/payment/checkout";
 import {
   Card,
   CardContent,

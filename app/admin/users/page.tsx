@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { UsersList } from "@/components/users-list";
+import { UsersList } from "@/components/admin/users-list";
 
 interface User {
   id: string;

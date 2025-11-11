@@ -5,8 +5,6 @@ import NextImage from "next/image";
 import { useRouter } from "next/navigation";
 import type React from "react";
 import { useState } from "react";
-import { BeforeAfterSlider } from "@/components/before-after-slider";
-import { ImagePlaceholder } from "@/components/image-placeholder";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,6 +15,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useUpdateUserCredits, useUser } from "@/hooks/useUser";
+import { BeforeAfterSlider } from "./before-after-slider";
+import { ImagePlaceholder } from "./image-placeholder";
 
 interface PipelineExecutorProps {
   pipeline: {

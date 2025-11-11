@@ -1,8 +1,8 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
-import Header from "@/components/header";
-import { ThemeSwitcher } from "@/components/theme-switcher";
+import Header from "@/components/common/header";
+import { ThemeSwitcher } from "@/components/common/theme-switcher";
 import { getBaseURL } from "@/lib/utils";
 import { Providers } from "./providers";
 
