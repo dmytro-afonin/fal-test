@@ -34,6 +34,7 @@ export async function GET() {
         id: user.id,
         email: user.email,
         credits: profile.credits,
+        role: profile.role || "user",
       },
     });
   } catch (error) {

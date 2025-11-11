@@ -1,8 +1,5 @@
-import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { EditPipelineForm } from "@/components/edit-pipeline-form";
-import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
 
 interface EditPipelinePageProps {
@@ -41,18 +38,17 @@ export default async function EditPipelinePage({
     before_image_url: preset.image_before || "",
     after_image_url: preset.image_after || "",
     credit_cost: preset.credit_cost,
+    is_public: preset.is_public || false,
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto px-4 py-4">
-          <Link href="/admin">
-            <Button variant="ghost" size="sm">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Admin
-            </Button>
-          </Link>
+          <h1 className="text-2xl font-bold">Edit Preset</h1>
+          <p className="text-sm text-muted-foreground">
+            Update preset configuration
+          </p>
         </div>
       </header>
 
