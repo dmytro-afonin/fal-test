@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { BeforeAfterSlider } from "./before-after-slider";
-import { PipelineExecutor } from "./pipeline-executor";
+import { PipelineExecutorCompact } from "./pipeline-executor-compact";
 
 interface Preset {
   id: string;
@@ -91,7 +91,7 @@ export function Studio({ presets, pipelines, galleryItems }: StudioProps) {
   };
 
   return (
-    <div className="flex overflow-hidden">
+    <div className="flex h-full min-h-0 overflow-hidden">
       {/* Expandable Sidebar */}
       <div
         className={cn(
@@ -176,9 +176,9 @@ export function Studio({ presets, pipelines, galleryItems }: StudioProps) {
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
         {/* Gallery Area */}
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 min-h-0 overflow-y-auto p-6">
           <div className="mb-6">
             <h1 className="text-2xl font-bold mb-2">Studio</h1>
             <p className="text-muted-foreground">
@@ -242,24 +242,29 @@ export function Studio({ presets, pipelines, galleryItems }: StudioProps) {
 
         {/* Active Tool at Bottom */}
         {activeTool && (
-          <div className="border-t bg-background p-4 max-h-96 overflow-y-auto">
+          <div className="border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 p-3 shrink-0">
             <div className="max-w-4xl mx-auto">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h3 className="text-lg font-semibold">{activeTool.name}</h3>
-                  <p className="text-sm text-muted-foreground">
-                    {activeTool.description}
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <h3 className="text-sm font-semibold truncate">
+                    {activeTool.name}
+                  </h3>
+                  <p className="text-xs text-muted-foreground truncate">
+                    {activeTool.credit_cost} credits
                   </p>
                 </div>
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => setActiveTool(null)}
+                  aria-label="Close tool"
                 >
                   ×
                 </Button>
               </div>
-              <PipelineExecutor pipeline={activeTool} />
+              <div className="mt-3">
+                <PipelineExecutorCompact pipeline={activeTool} />
+              </div>
             </div>
           </div>
         )}
