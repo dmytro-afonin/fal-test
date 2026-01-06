@@ -138,4 +138,3 @@ export function useImageGeneration({ activeTool }: UseImageGenerationOptions) {
     reset,
   };
 }
-

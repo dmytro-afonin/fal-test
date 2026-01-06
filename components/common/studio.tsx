@@ -10,9 +10,9 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { useCallback, useMemo, useState } from "react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import { FloatingToolPanel } from "./floating-tool-panel";
-import { Checkbox } from "@/components/ui/checkbox";
 
 // Helper to format date as "Today", "Yesterday", or "Jan 5"
 function formatDateLabel(date: Date): string {
@@ -20,7 +20,11 @@ function formatDateLabel(date: Date): string {
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const yesterday = new Date(today);
   yesterday.setDate(yesterday.getDate() - 1);
-  const itemDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  const itemDate = new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+  );
 
   if (itemDate.getTime() === today.getTime()) {
     return "Today";
@@ -131,26 +135,23 @@ export function Studio({ presets, pipelines, galleryItems }: StudioProps) {
     setActiveTool(null);
   };
 
-  const handleDownload = useCallback(
-    async (url: string, filename: string) => {
-      try {
-        const response = await fetch(url);
-        const blob = await response.blob();
-        const blobUrl = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = blobUrl;
-        link.download = filename;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(blobUrl);
-      } catch {
-        // Fallback: open in new tab if download fails
-        window.open(url, "_blank");
-      }
-    },
-    [],
-  );
+  const handleDownload = useCallback(async (url: string, filename: string) => {
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(blobUrl);
+    } catch {
+      // Fallback: open in new tab if download fails
+      window.open(url, "_blank");
+    }
+  }, []);
 
   // Group gallery items by date
   const groupedGalleryItems = useMemo(() => {
@@ -159,7 +160,11 @@ export function Studio({ presets, pipelines, galleryItems }: StudioProps) {
         item.outputImage !== null,
     );
 
-    const groups: { dateLabel: string; dateKey: string; items: typeof filtered }[] = [];
+    const groups: {
+      dateLabel: string;
+      dateKey: string;
+      items: typeof filtered;
+    }[] = [];
     let currentGroup: (typeof groups)[0] | null = null;
 
     for (const item of filtered) {
@@ -294,9 +299,7 @@ export function Studio({ presets, pipelines, galleryItems }: StudioProps) {
               <Checkbox
                 id="show-original"
                 checked={showOriginal}
-                onCheckedChange={(checked) =>
-                  setShowOriginal(checked === true)
-                }
+                onCheckedChange={(checked) => setShowOriginal(checked === true)}
                 className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
               />
               <Eye className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
@@ -320,7 +323,8 @@ export function Studio({ presets, pipelines, galleryItems }: StudioProps) {
               </div>
               <h2 className="text-lg font-semibold mb-2">No generations yet</h2>
               <p className="text-sm text-muted-foreground max-w-xs">
-                Select a tool from the panel and upload an image to start creating
+                Select a tool from the panel and upload an image to start
+                creating
               </p>
             </div>
           ) : (
@@ -343,7 +347,8 @@ export function Studio({ presets, pipelines, galleryItems }: StudioProps) {
                         key={item.id}
                         className={cn(
                           "group relative animate-in fade-in-0 zoom-in-95 duration-300",
-                          !showOriginal && "rounded-2xl overflow-hidden bg-muted",
+                          !showOriginal &&
+                            "rounded-2xl overflow-hidden bg-muted",
                         )}
                       >
                         {/* Grouped Images Container */}
@@ -455,7 +460,10 @@ export function Studio({ presets, pipelines, galleryItems }: StudioProps) {
                           /* Single Output Image View */
                           <div
                             className="group/single relative"
-                            style={{ maxWidth: "min(33vw, 280px)", minWidth: "100px" }}
+                            style={{
+                              maxWidth: "min(33vw, 280px)",
+                              minWidth: "100px",
+                            }}
                           >
                             <Image
                               src={item.outputImage}

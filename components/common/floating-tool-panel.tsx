@@ -64,7 +64,9 @@ export function FloatingToolPanel({
         {/* Header with description */}
         <div className="flex items-start justify-between gap-3 mb-3">
           <div className="flex-1 min-w-0">
-            <h3 className="text-sm font-semibold truncate">{activeTool.name}</h3>
+            <h3 className="text-sm font-semibold truncate">
+              {activeTool.name}
+            </h3>
             <p className="text-xs text-muted-foreground truncate">
               {activeTool.description}
             </p>
@@ -179,4 +181,3 @@ export function FloatingToolPanel({
     </div>
   );
 }
-
