@@ -1,9 +1,14 @@
 "use client";
 
-import { ChevronLeft, ChevronRight, Download, ExternalLink } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Download,
+  ExternalLink,
+  Sparkles,
+} from "lucide-react";
 import Image from "next/image";
 import { useCallback, useState } from "react";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { FloatingToolPanel } from "./floating-tool-panel";
 
@@ -114,82 +119,99 @@ export function Studio({ presets, pipelines, galleryItems }: StudioProps) {
   );
 
   return (
-    <div className="flex overflow-hidden">
-      {/* Expandable Sidebar */}
-      <div
-        className={cn(
-          "border-r bg-background transition-all duration-300 flex flex-col",
-          sidebarExpanded ? "w-64" : "w-16",
-        )}
-      >
-        <div className="flex items-center justify-between p-4 border-b">
-          {sidebarExpanded && <h2 className="text-lg font-semibold">Tools</h2>}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setSidebarExpanded(!sidebarExpanded)}
-            className="ml-auto"
-          >
-            {sidebarExpanded ? (
-              <ChevronLeft className="h-4 w-4" />
-            ) : (
-              <ChevronRight className="h-4 w-4" />
+    <div className="h-[calc(100vh-4rem)] flex overflow-hidden">
+      {/* Sidebar - part of layout, styled as floating panel */}
+      <div className="flex-shrink-0 p-3">
+        <div
+          className={cn(
+            "h-full bg-card border border-border/50 rounded-2xl shadow-xl flex flex-col transition-all duration-300 ease-out",
+            sidebarExpanded ? "w-52" : "w-14",
+          )}
+        >
+          {/* Sidebar Header */}
+          <div className="flex items-center justify-between p-3">
+            {sidebarExpanded && (
+              <span className="text-sm font-semibold animate-in fade-in-0 slide-in-from-left-2 duration-200">
+                Tools
+              </span>
             )}
-          </Button>
-        </div>
+            <button
+              type="button"
+              onClick={() => setSidebarExpanded(!sidebarExpanded)}
+              className={cn(
+                "p-1.5 rounded-lg hover:bg-accent transition-colors",
+                !sidebarExpanded && "mx-auto",
+              )}
+              title={sidebarExpanded ? "Collapse" : "Expand"}
+            >
+              {sidebarExpanded ? (
+                <ChevronLeft className="h-4 w-4" />
+              ) : (
+                <ChevronRight className="h-4 w-4" />
+              )}
+            </button>
+          </div>
 
-        <div className="flex-1 overflow-y-auto p-2">
-          <div className="space-y-1">
+          {/* Tools List */}
+          <div className="flex-1 overflow-y-auto px-2 pb-2 space-y-1">
             {tools.map((tool) => (
               <button
                 key={`${tool.type}-${tool.id}`}
                 type="button"
                 onClick={() => handleToolSelect(tool)}
                 className={cn(
-                  "w-full text-left p-2 rounded-md transition-colors",
+                  "w-full text-left p-2 rounded-xl transition-all duration-200",
                   "hover:bg-accent hover:text-accent-foreground",
                   activeTool?.id === tool.id &&
                     activeTool?.type === tool.type &&
-                    "bg-accent text-accent-foreground",
-                  !sidebarExpanded && "flex justify-center",
+                    "bg-primary/10 text-primary ring-1 ring-primary/20",
+                  !sidebarExpanded && "flex justify-center p-2",
                 )}
                 title={sidebarExpanded ? undefined : tool.name}
               >
                 {sidebarExpanded ? (
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded bg-muted flex-shrink-0 overflow-hidden">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-9 h-9 rounded-lg bg-muted flex-shrink-0 overflow-hidden">
                       {tool.image_before ? (
                         <Image
                           src={tool.image_before}
                           alt={tool.name}
-                          width={32}
-                          height={32}
+                          width={36}
+                          height={36}
                           className="w-full h-full object-cover"
                           unoptimized
                         />
-                      ) : null}
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <Sparkles className="w-4 h-4 text-muted-foreground" />
+                        </div>
+                      )}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="text-sm font-medium truncate">
                         {tool.name}
                       </div>
-                      <div className="text-xs text-muted-foreground truncate">
+                      <div className="text-xs text-muted-foreground">
                         {tool.credit_cost} credits
                       </div>
                     </div>
                   </div>
                 ) : (
-                  <div className="w-8 h-8 rounded bg-muted overflow-hidden">
+                  <div className="w-9 h-9 rounded-lg bg-muted overflow-hidden">
                     {tool.image_before ? (
                       <Image
                         src={tool.image_before}
                         alt={tool.name}
-                        width={32}
-                        height={32}
+                        width={36}
+                        height={36}
                         className="w-full h-full object-cover"
                         unoptimized
                       />
-                    ) : null}
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <Sparkles className="w-4 h-4 text-muted-foreground" />
+                      </div>
+                    )}
                   </div>
                 )}
               </button>
@@ -200,20 +222,24 @@ export function Studio({ presets, pipelines, galleryItems }: StudioProps) {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Gallery Area */}
-        <div className="flex-1 overflow-y-auto p-6">
-          <div className="mb-6">
-            <h1 className="text-2xl font-bold mb-2">Studio</h1>
-            <p className="text-muted-foreground">
-              Select a tool from the sidebar to start creating
-            </p>
-          </div>
+        {/* Header */}
+        <div className="flex-shrink-0 px-6 py-4">
+          <h1 className="text-xl font-semibold">Studio</h1>
+          <p className="text-sm text-muted-foreground">
+            Your creative workspace
+          </p>
+        </div>
 
+        {/* Scrollable Gallery Area */}
+        <div className="flex-1 overflow-y-auto px-6 pb-24">
           {galleryItems.length === 0 ? (
-            <div className="text-center py-20">
-              <h2 className="text-xl font-semibold mb-2">No generations yet</h2>
-              <p className="text-muted-foreground">
-                Start creating images to see them here
+            <div className="flex flex-col items-center justify-center h-full text-center">
+              <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center mb-4">
+                <Sparkles className="w-8 h-8 text-muted-foreground" />
+              </div>
+              <h2 className="text-lg font-semibold mb-1">No generations yet</h2>
+              <p className="text-sm text-muted-foreground max-w-xs">
+                Select a tool from the panel to start creating amazing images
               </p>
             </div>
           ) : (
@@ -288,7 +314,6 @@ export function Studio({ presets, pipelines, galleryItems }: StudioProps) {
             </div>
           )}
         </div>
-
       </div>
 
       {/* Floating Tool Panel */}
