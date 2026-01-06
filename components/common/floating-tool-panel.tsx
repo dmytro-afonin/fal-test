@@ -1,8 +1,9 @@
 "use client";
 
-import { Coins, Loader2, Plus, X } from "lucide-react";
+import { Coins, Download, Loader2, Plus, X } from "lucide-react";
 import NextImage from "next/image";
 import { useRouter } from "next/navigation";
+import { useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { useImageGeneration } from "@/hooks/useImageGeneration";
 import { cn } from "@/lib/utils";
@@ -39,6 +40,23 @@ export function FloatingToolPanel({
     handleGenerate,
     openFilePicker,
   } = useImageGeneration({ activeTool });
+
+  const handleDownload = useCallback(async (url: string, filename: string) => {
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(blobUrl);
+    } catch {
+      window.open(url, "_blank");
+    }
+  }, []);
 
   return (
     <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
@@ -145,15 +163,16 @@ export function FloatingToolPanel({
 
           {/* Download button for result */}
           {outputUrl && (
-            <a
-              href={outputUrl}
-              download
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs text-primary hover:underline flex-shrink-0"
+            <button
+              type="button"
+              onClick={() =>
+                handleDownload(outputUrl, `${activeTool.name}-result.png`)
+              }
+              className="p-1.5 rounded-md hover:bg-accent transition-colors flex-shrink-0"
+              title="Download result"
             >
-              Download
-            </a>
+              <Download className="w-4 h-4 text-primary" />
+            </button>
           )}
         </div>
       </div>

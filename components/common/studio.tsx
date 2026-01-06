@@ -1,12 +1,10 @@
 "use client";
 
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Download, ExternalLink } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { BeforeAfterSlider } from "./before-after-slider";
 import { FloatingToolPanel } from "./floating-tool-panel";
 
 interface Preset {
@@ -93,6 +91,27 @@ export function Studio({ presets, pipelines, galleryItems }: StudioProps) {
   const handleCloseTool = () => {
     setActiveTool(null);
   };
+
+  const handleDownload = useCallback(
+    async (url: string, filename: string) => {
+      try {
+        const response = await fetch(url);
+        const blob = await response.blob();
+        const blobUrl = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = blobUrl;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(blobUrl);
+      } catch {
+        // Fallback: open in new tab if download fails
+        window.open(url, "_blank");
+      }
+    },
+    [],
+  );
 
   return (
     <div className="flex overflow-hidden">
@@ -198,48 +217,74 @@ export function Studio({ presets, pipelines, galleryItems }: StudioProps) {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {galleryItems.map((item) => (
-                <Card
-                  key={item.id}
-                  className="overflow-hidden transition-all hover:shadow-lg"
-                >
-                  <CardContent className="p-0">
-                    {item.inputImage && item.outputImage ? (
-                      <BeforeAfterSlider
-                        beforeImage={item.inputImage}
-                        afterImage={item.outputImage}
-                        alt={item.presetName}
-                      />
-                    ) : item.outputImage ? (
-                      <div className="relative w-full aspect-square bg-muted">
-                        <Image
-                          src={item.outputImage}
-                          alt={item.presetName}
-                          fill
-                          className="object-cover"
-                          unoptimized
-                        />
+            <div className="flex flex-wrap gap-4">
+              {galleryItems
+                .filter(
+                  (item): item is GalleryItem & { outputImage: string } =>
+                    item.outputImage !== null,
+                )
+                .map((item) => (
+                  <div
+                    key={item.id}
+                    className="group relative rounded-xl overflow-hidden bg-muted"
+                    style={{ maxWidth: "min(33vw, 280px)", minWidth: "100px" }}
+                  >
+                    {/* Image with constrained size */}
+                    <Image
+                      src={item.outputImage}
+                      alt={item.presetName}
+                      width={280}
+                      height={280}
+                      className="w-full h-auto object-contain"
+                      style={{ maxHeight: "min(33vh, 280px)" }}
+                      unoptimized
+                    />
+
+                    {/* Bottom bar with info and actions - always visible */}
+                    <div className="absolute bottom-0 left-0 right-0 p-2 bg-black/60 backdrop-blur-sm">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-white text-xs font-medium truncate">
+                            {item.presetName}
+                          </p>
+                          <p className="text-white/60 text-[10px]">
+                            {new Date(item.createdAt).toLocaleDateString(
+                              "en-US",
+                              {
+                                month: "short",
+                                day: "numeric",
+                              },
+                            )}
+                          </p>
+                        </div>
+                        <div className="flex gap-1 flex-shrink-0">
+                          <a
+                            href={item.outputImage}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-1.5 rounded-md hover:bg-white/20 transition-colors"
+                            title="Open in new tab"
+                          >
+                            <ExternalLink className="w-3.5 h-3.5 text-white" />
+                          </a>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleDownload(
+                                item.outputImage,
+                                `${item.presetName}-${item.id}.png`,
+                              )
+                            }
+                            className="p-1.5 rounded-md hover:bg-white/20 transition-colors"
+                            title="Download"
+                          >
+                            <Download className="w-3.5 h-3.5 text-white" />
+                          </button>
+                        </div>
                       </div>
-                    ) : (
-                      <div className="w-full aspect-square bg-muted flex items-center justify-center">
-                        <span className="text-muted-foreground text-sm">
-                          No image available
-                        </span>
-                      </div>
-                    )}
-                  </CardContent>
-                  <CardHeader className="p-3">
-                    <CardTitle className="text-sm">{item.presetName}</CardTitle>
-                    <p className="text-xs text-muted-foreground">
-                      {new Date(item.createdAt).toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                      })}
-                    </p>
-                  </CardHeader>
-                </Card>
-              ))}
+                    </div>
+                  </div>
+                ))}
             </div>
           )}
         </div>
