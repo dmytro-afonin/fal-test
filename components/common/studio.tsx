@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { BeforeAfterSlider } from "./before-after-slider";
-import { PipelineExecutor } from "./pipeline-executor";
+import { FloatingToolPanel } from "./floating-tool-panel";
 
 interface Preset {
   id: string;
@@ -88,6 +88,10 @@ export function Studio({ presets, pipelines, galleryItems }: StudioProps) {
       after_image_url: tool.image_after,
       credit_cost: tool.credit_cost,
     });
+  };
+
+  const handleCloseTool = () => {
+    setActiveTool(null);
   };
 
   return (
@@ -240,30 +244,12 @@ export function Studio({ presets, pipelines, galleryItems }: StudioProps) {
           )}
         </div>
 
-        {/* Active Tool at Bottom */}
-        {activeTool && (
-          <div className="border-t bg-background p-4 max-h-96 overflow-y-auto">
-            <div className="max-w-4xl mx-auto">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h3 className="text-lg font-semibold">{activeTool.name}</h3>
-                  <p className="text-sm text-muted-foreground">
-                    {activeTool.description}
-                  </p>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setActiveTool(null)}
-                >
-                  ×
-                </Button>
-              </div>
-              <PipelineExecutor pipeline={activeTool} />
-            </div>
-          </div>
-        )}
       </div>
+
+      {/* Floating Tool Panel */}
+      {activeTool && (
+        <FloatingToolPanel activeTool={activeTool} onClose={handleCloseTool} />
+      )}
     </div>
   );
 }
