@@ -22,6 +22,9 @@
         "noUnknownAtRules": "off",
         "noExplicitAny": "off"
       },
+      "style": {
+        "useImportType": "off"
+      },
       "complexity": {
         "noBannedTypes": "off"
       }
