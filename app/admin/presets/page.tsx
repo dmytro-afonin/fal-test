@@ -48,28 +48,18 @@ export default function AdminPresetsPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
-      {/* Header */}
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold">Presets</h1>
-              <p className="text-sm text-muted-foreground">Manage AI presets</p>
-            </div>
-            <Link href="/admin/create">
-              <Button>
-                <Plus className="w-4 h-4 mr-2" />
-                Create Preset
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </header>
-
       {/* Main Content */}
       <main className="container mx-auto px-4 py-12">
         <PresetGallery presets={presets} />
       </main>
+
+      {/* Floating Action Button */}
+      <Link href="/admin/create" className="fixed bottom-6 right-6 z-50">
+        <Button size="lg" className="rounded-full h-14 w-14 shadow-lg">
+          <Plus className="w-6 h-6" />
+          <span className="sr-only">Create Preset</span>
+        </Button>
+      </Link>
     </div>
   );
 }

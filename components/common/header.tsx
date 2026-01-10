@@ -96,11 +96,7 @@ function UserData() {
     return pathname === path || pathname.startsWith(`${path}/`);
   };
 
-  const navLinks = [
-    { href: "/studio", label: "STUDIO" },
-    { href: "/gallery", label: "GALLERY" },
-    { href: "/tools", label: "TOOLS" },
-  ];
+  const navLinks = [{ href: "/studio", label: "STUDIO" }];
 
   return (
     <>
