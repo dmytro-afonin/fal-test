@@ -82,26 +82,6 @@ export default function AdminPipelinesPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
-      {/* Header */}
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold">Pipelines</h1>
-              <p className="text-sm text-muted-foreground">
-                Manage custom pipelines
-              </p>
-            </div>
-            <Link href="/admin/create-pipeline">
-              <Button>
-                <Plus className="w-4 h-4 mr-2" />
-                Create Pipeline
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </header>
-
       {/* Main Content */}
       <main className="container mx-auto px-4 py-12">
         <PipelineGallery
@@ -109,6 +89,17 @@ export default function AdminPipelinesPage() {
           presets={presets.map((p) => ({ id: p.id, name: p.name }))}
         />
       </main>
+
+      {/* Floating Action Button */}
+      <Link
+        href="/admin/create-pipeline"
+        className="fixed bottom-6 right-6 z-50"
+      >
+        <Button size="lg" className="rounded-full h-14 w-14 shadow-lg">
+          <Plus className="w-6 h-6" />
+          <span className="sr-only">Create Pipeline</span>
+        </Button>
+      </Link>
     </div>
   );
 }

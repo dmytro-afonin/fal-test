@@ -45,18 +45,6 @@ export default function AdminUsersPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
-      {/* Header */}
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto px-4 py-4">
-          <div>
-            <h1 className="text-2xl font-bold">Users</h1>
-            <p className="text-sm text-muted-foreground">
-              Manage user accounts and roles
-            </p>
-          </div>
-        </div>
-      </header>
-
       {/* Main Content */}
       <main className="container mx-auto px-4 py-12">
         <UsersList users={users} />
